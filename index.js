@@ -24,6 +24,10 @@ async function run() {
 		const movieHouseUsersCollection =
 			database.collection("movie_house_users");
 
+		const movieHousePlayListsCollection = database.collection(
+			"movie_house_playLists"
+		);
+
 		// get user api
 		app.get("/movie_house_users", async (req, res) => {
 			const cursor = movieHouseUsersCollection.find({});
@@ -33,7 +37,7 @@ async function run() {
 		});
 
 		// save user api
-		app.post("/usemovie_house_users", async (req, res) => {
+		app.post("/movie_house_users", async (req, res) => {
 			const user = req.body;
 			const result = await movieHouseUsersCollection.insertOne(user);
 			console.log("Movie house users data saved");
@@ -53,6 +57,33 @@ async function run() {
 			);
 			console.log("movie house update user data");
 			res.json(result);
+		});
+
+		// save playlist api
+		app.post("/movie_house_playLists", async (req, res) => {
+			const playList = req.body;
+			const result = await movieHousePlayListsCollection.insertOne(
+				playList
+			);
+			console.log("Movie house playlists data saved");
+			res.json(result);
+		});
+
+		// get orders api
+		app.get("/movie_house_playLists", async (req, res) => {
+			const email = req?.query?.email;
+			if (email) {
+				const query = { email };
+				const cursor = movieHousePlayListsCollection.find(query);
+				const playlists = await cursor.toArray();
+				console.log("Single user playlists found");
+				res.json(playlists);
+			} else {
+				const cursor = movieHousePlayListsCollection.find({});
+				const playlists = await cursor.toArray();
+				console.log("Playlists found");
+				res.json(playlists);
+			}
 		});
 
 		console.log("database connection ok");
